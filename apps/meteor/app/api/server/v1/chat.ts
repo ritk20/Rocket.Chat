@@ -79,21 +79,21 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const { roomId, lastUpdate, count, next, previous } = this.queryParams;
+			const { roomId, lastUpdate, count, next, previous, type } = this.queryParams;
 
 			if (!roomId) {
-				throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing.');
+				throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing');
 			}
 
 			if (!lastUpdate && !next && !previous) {
 				throw new Meteor.Error(
 					'error-param-not-provided',
-					'You need to provide at least one of the following query parameters: "lastUpdate", "next", or "previous".',
+					'You need to provide at least one of the following query parameters: "lastUpdate", "next", or "previous"',
 				);
 			}
 
 			if (lastUpdate && isNaN(Date.parse(lastUpdate))) {
-				throw new Meteor.Error('error-lastUpdate-param-invalid', 'The "lastUpdate" query parameter must be a valid date.');
+				throw new Meteor.Error('error-lastUpdate-param-invalid', 'The "lastUpdate" query parameter must be a valid date');
 			}
 
 			const getMessagesQuery = {
@@ -101,6 +101,7 @@ API.v1.addRoute(
 				...(next && { next }),
 				...(previous && { previous }),
 				...(count && { count }),
+				...(type && { type }),
 			};
 
 			const result = await Meteor.callAsync('messages/get', roomId, getMessagesQuery);
@@ -111,12 +112,9 @@ API.v1.addRoute(
 
 			return API.v1.success({
 				result: {
-					updated: await normalizeMessagesForUser(result.updated, this.userId),
-					deleted: result.deleted,
-					cursor: {
-						next: result.cursor?.next,
-						previous: result.cursor?.previous,
-					},
+					...(result.updated && { updated: await normalizeMessagesForUser(result.updated, this.userId) }),
+					...(result.deleted && { deleted: result.deleted }),
+					...(result.cursor && { cursor: result.cursor }),
 				},
 			});
 		},

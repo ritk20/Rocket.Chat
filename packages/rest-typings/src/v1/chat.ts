@@ -595,6 +595,7 @@ type ChatSyncMessages = {
 	count?: number;
 	next?: string;
 	previous?: string;
+	type?: 'UPDATED' | 'DELETED';
 };
 
 const ChatSyncMessagesSchema = {
