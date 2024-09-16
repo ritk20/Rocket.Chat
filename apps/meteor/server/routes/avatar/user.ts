@@ -62,10 +62,15 @@ export const userAvatarByUsername = async function (req: IIncomingMessage, res: 
 		return;
 	}
 
-	const avatarSize = getAvatarSizeFromRequest(req);
-
 	setCacheAndDispositionHeaders(req, res);
 
+	const externalProviderUrl = settings.get<string>('Accounts_AvatarExternalProviderUrl');
+	if (externalProviderUrl) {
+		void handleExternalProvider(externalProviderUrl, requestUsername, res);
+		return;
+	}
+
+	const avatarSize = getAvatarSizeFromRequest(req);
 	// if request starts with @ always return the svg letters
 	if (requestUsername[0] === '@') {
 		serveSvgAvatar(requestUsername.slice(1), avatarSize, req.query.format, res);
@@ -75,12 +80,6 @@ export const userAvatarByUsername = async function (req: IIncomingMessage, res: 
 	const file = await Avatars.findOneByName(requestUsername);
 	if (file) {
 		void serveAvatarFile(file, req, res, next);
-		return;
-	}
-
-	const externalProviderUrl = settings.get<string>('Accounts_AvatarExternalProviderUrl');
-	if (!externalProviderUrl) {
-		void handleExternalProvider(externalProviderUrl, requestUsername, res);
 		return;
 	}
 
@@ -122,9 +121,21 @@ export const userAvatarById = async function (req: IIncomingMessage, res: Server
 		return;
 	}
 
-	const avatarSize = getAvatarSizeFromRequest(req);
-
 	setCacheAndDispositionHeaders(req, res);
+
+	const externalProviderUrl = settings.get<string>('Accounts_AvatarExternalProviderUrl');
+	if (externalProviderUrl) {
+		const user = await Users.findOneById(requestUserId, { projection: { username: 1, name: 1 } });
+
+		if (!user?.username) {
+			res.writeHead(404);
+			res.end();
+			return;
+		}
+
+		void handleExternalProvider(externalProviderUrl, user.username, res);
+		return;
+	}
 
 	const file = await Avatars.findOne({ userId: requestUserId });
 	if (file) {
@@ -140,18 +151,14 @@ export const userAvatarById = async function (req: IIncomingMessage, res: Server
 		return;
 	}
 
-	const externalProviderUrl = settings.get<string>('Accounts_AvatarExternalProviderUrl');
-	if (!externalProviderUrl) {
-		void handleExternalProvider(externalProviderUrl, user.username, res);
-		return;
-	}
-
 	// if still using "letters fallback"
 	if (!wasFallbackModified(req.headers['if-modified-since'])) {
 		res.writeHead(304);
 		res.end();
 		return;
 	}
+
+	const avatarSize = getAvatarSizeFromRequest(req);
 
 	// Use real name for SVG letters
 	if (settings.get('UI_Use_Name_Avatar') && user?.name) {
