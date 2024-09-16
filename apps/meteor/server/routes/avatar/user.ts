@@ -41,11 +41,7 @@ const serveAvatarFile = (file: IUpload, req: IIncomingMessage, res: ServerRespon
 	return FileUpload.get(file, req, res, next);
 };
 
-const handleExternalProvider = async (username: string, res: ServerResponse): Promise<boolean> => {
-	const externalProviderUrl = settings.get<string>('Accounts_AvatarExternalProviderUrl');
-	if (!externalProviderUrl) {
-		return false;
-	}
+const handleExternalProvider = async (externalProviderUrl: string, username: string, res: ServerResponse): Promise<boolean> => {
 	const response = await fetch(externalProviderUrl.replace('{username}', username));
 	response.headers.forEach((value, key) => res.setHeader(key, value));
 	response.body.pipe(res);
@@ -78,10 +74,13 @@ export const userAvatarByUsername = async function (req: IIncomingMessage, res: 
 
 	const file = await Avatars.findOneByName(requestUsername);
 	if (file) {
-		return serveAvatarFile(file, req, res, next);
+		void serveAvatarFile(file, req, res, next);
+		return;
 	}
 
-	if (await handleExternalProvider(requestUsername, res)) {
+	const externalProviderUrl = settings.get<string>('Accounts_AvatarExternalProviderUrl');
+	if (!externalProviderUrl) {
+		void handleExternalProvider(externalProviderUrl, requestUsername, res);
 		return;
 	}
 
@@ -129,7 +128,8 @@ export const userAvatarById = async function (req: IIncomingMessage, res: Server
 
 	const file = await Avatars.findOne({ userId: requestUserId });
 	if (file) {
-		return serveAvatarFile(file, req, res, next);
+		void serveAvatarFile(file, req, res, next);
+		return;
 	}
 
 	const user = await Users.findOneById(requestUserId, { projection: { username: 1, name: 1 } });
@@ -140,7 +140,9 @@ export const userAvatarById = async function (req: IIncomingMessage, res: Server
 		return;
 	}
 
-	if (await handleExternalProvider(user.username, res)) {
+	const externalProviderUrl = settings.get<string>('Accounts_AvatarExternalProviderUrl');
+	if (!externalProviderUrl) {
+		void handleExternalProvider(externalProviderUrl, user.username, res);
 		return;
 	}
 
