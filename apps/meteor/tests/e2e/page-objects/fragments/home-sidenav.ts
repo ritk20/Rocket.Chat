@@ -68,8 +68,11 @@ export class HomeSidenav {
 		return this.page.locator('role=menuitemcheckbox[name="Profile"]');
 	}
 
-	getSidebarItemByName(name: string): Locator {
-		return this.page.locator(`[data-qa="sidebar-item"][aria-label="${name}"]`);
+	// TODO: refactor getSidebarItemByName to not use data-qa
+	getSidebarItemByName(name: string, isRead?: boolean): Locator {
+		return this.page.locator(
+			['[data-qa="sidebar-item"]', `[aria-label="${name}"]`, isRead && '[data-unread="false"]'].filter(Boolean).join(''),
+		);
 	}
 
 	async selectMarkAsUnread(name: string) {
@@ -102,7 +105,16 @@ export class HomeSidenav {
 	}
 
 	async openSearch(): Promise<void> {
-		await this.page.locator('role=button[name="Search"]').click();
+		await this.page.locator('role=navigation >> role=button[name=Search]').click();
+	}
+
+	getSearchRoomByName(name: string): Locator {
+		return this.page.locator(`role=search >> role=listbox >> role=link >> text="${name}"`);
+	}
+
+	async searchRoom(name: string): Promise<void> {
+		await this.openSearch();
+		await this.page.locator('role=search >> role=searchbox').fill(name);
 	}
 
 	async logout(): Promise<void> {
@@ -116,9 +128,8 @@ export class HomeSidenav {
 	}
 
 	async openChat(name: string): Promise<void> {
-		await this.page.locator('role=navigation >> role=button[name=Search]').click();
-		await this.page.locator('role=search >> role=searchbox').fill(name);
-		await this.page.locator(`role=search >> role=listbox >> role=link >> text="${name}"`).click();
+		await this.searchRoom(name);
+		await this.getSearchRoomByName(name).click();
 		await this.waitForChannel();
 	}
 
@@ -170,7 +181,11 @@ export class HomeSidenav {
 		await this.btnCreate.click();
 	}
 
-	getChannelBadge(sidebarItem: Locator): Locator {
-		return sidebarItem.locator('.rcx-badge');
+	getRoomBadge(roomName: string): Locator {
+		return this.getSidebarItemByName(roomName).getByRole('status', { exact: true });
+	}
+
+	getSearchChannelBadge(name: string): Locator {
+		return this.page.locator(`[data-qa="sidebar-item"][aria-label="${name}"]`).first().getByRole('status', { exact: true });
 	}
 }
