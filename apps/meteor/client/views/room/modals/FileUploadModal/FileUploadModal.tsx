@@ -93,7 +93,7 @@ const FileUploadModal = ({
 									})}
 								/>
 							</FieldRow>
-							<FieldError>{errors.name?.message}</FieldError>
+							{!fileName && <FieldError>{t('Required_field', { field: t('Upload_file_name') })}</FieldError>}
 						</Field>
 						{showDescription && (
 							<Field>
