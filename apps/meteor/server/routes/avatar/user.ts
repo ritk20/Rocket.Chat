@@ -1,6 +1,5 @@
 import type { ServerResponse } from 'http';
 
-// TODO: what is the type of re.query?
 import type { IUpload, IIncomingMessage } from '@rocket.chat/core-typings';
 import { Avatars, Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
