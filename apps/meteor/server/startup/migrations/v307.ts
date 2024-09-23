@@ -6,11 +6,8 @@ import { SystemLogger } from '../../lib/logger/system';
 import { addMigration } from '../../lib/migrations';
 import { refreshLoginServices } from '../../lib/refreshLoginServices';
 
-// const newDefaultButtonColor = '#e4e7ea';
-// const newDefaultButtonLabelColor = '#1f2329';
-
-const newDefaultButtonColor = 'green';
-const newDefaultButtonLabelColor = 'blue';
+const newDefaultButtonColor = '#e4e7ea';
+const newDefaultButtonLabelColor = '#1f2329';
 
 const settingsToUpdate = [
 	// button background colors
@@ -26,7 +23,7 @@ const settingsToUpdate = [
 ];
 
 addMigration({
-	version: 308,
+	version: 307,
 	name: 'Change default color of OAuth login services buttons',
 	async up() {
 		const promises = settingsToUpdate
