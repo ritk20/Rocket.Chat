@@ -260,6 +260,5 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	getVisitorActiveForPeriodUpdateQuery(period: string, updater?: Updater<IOmnichannelRoom>): Updater<IOmnichannelRoom>;
 	getMACStatisticsForPeriod(period: string): Promise<MACStats[]>;
 	getMACStatisticsBetweenDates(start: Date, end: Date): Promise<MACStats[]>;
-	countLivechatRoomsByPriority(): Promise<number>;
 	countLivechatRoomsWithDepartment(): Promise<number>;
 }
