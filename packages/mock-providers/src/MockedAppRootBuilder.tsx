@@ -1,4 +1,4 @@
-import type { ISetting, Serialized, SettingValue } from '@rocket.chat/core-typings';
+import type { ISetting, IUser, Serialized, SettingValue } from '@rocket.chat/core-typings';
 import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
 import languages from '@rocket.chat/i18n/dist/languages';
@@ -233,7 +233,7 @@ export class MockedAppRootBuilder {
 		return this;
 	}
 
-	withJohnDoe(): this {
+	withJohnDoe(overrides: Partial<IUser> = {}): this {
 		this.user.userId = 'john.doe';
 
 		this.user.user = {
@@ -245,6 +245,7 @@ export class MockedAppRootBuilder {
 			_updatedAt: new Date(),
 			roles: ['admin'],
 			type: 'user',
+			...overrides,
 		};
 
 		return this;
