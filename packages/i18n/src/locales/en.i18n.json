@@ -391,6 +391,8 @@
   "Agent_Without_Extensions": "Agent Without Extensions",
   "Agents": "Agents",
   "Agree": "Agree",
+  "Airgapped_workspace_warning": "This air-gapped workspace will enter read-only mode in {{remainingDays}} days. <2>Connect it to internet or upgrade to a premium plan to prevent this.</1>",
+  "Airgapped_workspace_restriction": "This air-gapped workspace is in read-only mode. <2>Connect it to internet or upgraded to a premium plan to restore full functionality.</1>",
   "Alerts": "Alerts",
   "Alias": "Alias",
   "Alias_Format": "Alias Format",
