@@ -403,4 +403,8 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findAgentsAvailableWithoutBusinessHours(userIds: string[] | null): FindCursor<Pick<ILivechatAgent, '_id' | 'openBusinessHours'>>;
 	updateLivechatStatusByAgentIds(userIds: string[], status: ILivechatAgentStatus): Promise<UpdateResult>;
 	countActiveUsersWithCustomRoles(): Promise<number>;
+	findOneByFreeSwitchExtension<T = IUser>(extension: string, options?: FindOptions<IUser>): Promise<T | null>;
+	setFreeSwitchExtension(userId: string, extension: string | undefined): Promise<UpdateResult>;
+	findAssignedFreeSwitchExtensions(): FindCursor<string>;
+	findUsersWithAssignedFreeSwitchExtensions<T = IUser>(options?: FindOptions<IUser>): FindCursor<T>;
 }
