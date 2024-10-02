@@ -1,5 +1,6 @@
 import EventEmitter from 'events';
 
+import { License } from '.';
 import { decryptStatsToken } from './token';
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
@@ -7,7 +8,27 @@ const NO_ACTION_PERIOD_IN_DAYS = 3;
 const WARNING_PERIOD_IN_DAYS = 7;
 
 class AirGappedRestrictionClass extends EventEmitter {
-	public async checkRemainingDaysSinceLastStatsReport(encryptedToken: string): Promise<void> {
+	private restricted = false;
+
+	public get isRestricted(): boolean {
+		return this.restricted;
+	}
+
+	public async computeRestriction(encryptedToken?: string): Promise<void> {
+		if (License.hasModule('unlimited-presence')) {
+			this.removeRestrictionsUnderLicense();
+			return;
+		}
+
+		if (typeof encryptedToken !== 'string') {
+			this.applyRestrictions();
+			return;
+		}
+
+		return this.checkRemainingDaysSinceLastStatsReport(encryptedToken);
+	}
+
+	private async checkRemainingDaysSinceLastStatsReport(encryptedToken: string): Promise<void> {
 		try {
 			const { timestamp: lastStatsReportTimestamp } = JSON.parse(await decryptStatsToken(encryptedToken));
 			const now = new Date();
@@ -23,21 +44,26 @@ class AirGappedRestrictionClass extends EventEmitter {
 		}
 	}
 
-	public applyRestrictions(): void {
-		this.emit('remainingDays', { days: 0 });
+	private applyRestrictions(): void {
+		this.notifyRemainingDaysUntilRestriction(NO_ACTION_PERIOD_IN_DAYS + WARNING_PERIOD_IN_DAYS);
 	}
 
-	public removeRestrictions(): void {
+	private removeRestrictionsUnderLicense(): void {
+		this.restricted = false;
 		this.emit('remainingDays', { days: -1 });
 	}
 
-	private notifyRemainingDaysUntilRestriction(daysSinceLastStatsReport: number): void {
-		const remainingDaysUntilRestriction = NO_ACTION_PERIOD_IN_DAYS + WARNING_PERIOD_IN_DAYS - daysSinceLastStatsReport;
-		const olderThanTenDays = remainingDaysUntilRestriction < 0;
-		if (olderThanTenDays) {
-			return this.applyRestrictions();
+	public isWarningPeriod(days: number) {
+		if (days < 0) {
+			return false;
 		}
+		return days <= WARNING_PERIOD_IN_DAYS;
+	}
 
+	private notifyRemainingDaysUntilRestriction(daysSinceLastStatsReport: number): void {
+		const remainingDaysUntilRestriction = Math.max(NO_ACTION_PERIOD_IN_DAYS + WARNING_PERIOD_IN_DAYS - daysSinceLastStatsReport, 0);
+
+		this.restricted = remainingDaysUntilRestriction === 0;
 		this.emit('remainingDays', { days: remainingDaysUntilRestriction });
 	}
 }
