@@ -1,4 +1,5 @@
 import type { IDiscussionMessage, IUser } from '@rocket.chat/core-typings';
+import type { MouseEvent } from 'react';
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -10,7 +11,7 @@ type DiscussionListRowProps = {
 	discussion: IDiscussionMessage;
 	showRealNames: boolean;
 	userId: IUser['_id'];
-	onClick: (e: unknown) => void;
+	onClick: (e: MouseEvent<HTMLElement>) => void;
 };
 
 function DiscussionListRow({ discussion, showRealNames, userId, onClick }: DiscussionListRowProps) {

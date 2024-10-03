@@ -182,7 +182,7 @@ const UsersTableRow = ({ user, onClick, onReload, isMobile, isLaptop, tab, isSea
 						renderItem={({ label: { label, icon }, ...props }): ReactElement => (
 							<Option label={label} title={label} icon={icon} variant={label === 'Delete' ? 'danger' : ''} {...props} />
 						)}
-						options={menuOptions}
+						options={menuOptions as any} // FIXME: `renderItem` and `options` should be typed right
 					/>
 				</Box>
 			</GenericTableCell>
