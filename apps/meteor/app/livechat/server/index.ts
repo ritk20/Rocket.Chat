@@ -47,7 +47,6 @@ import './methods/saveTrigger';
 import './methods/sendMessageLivechat';
 import './methods/sendFileLivechatMessage';
 import './methods/sendOfflineMessage';
-import './methods/setCustomField';
 import './methods/setDepartmentForVisitor';
 import './methods/transfer';
 import './methods/webhookTest';
