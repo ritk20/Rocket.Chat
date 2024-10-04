@@ -23,7 +23,6 @@ import './methods/discardTranscript';
 import './methods/getAgentData';
 import './methods/getAgentOverviewData';
 import './methods/getAnalyticsChartData';
-import './methods/getAnalyticsOverviewData';
 import './methods/getNextAgent';
 import './methods/getRoutingConfig';
 import './methods/pageVisited';
