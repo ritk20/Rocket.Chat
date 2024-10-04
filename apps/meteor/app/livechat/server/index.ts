@@ -41,7 +41,6 @@ import './methods/saveCustomField';
 import './methods/saveDepartment';
 import './methods/saveDepartmentAgents';
 import './methods/saveInfo';
-import './methods/saveIntegration';
 import './methods/saveSurveyFeedback';
 import './methods/saveTrigger';
 import './methods/sendMessageLivechat';
