@@ -21,7 +21,6 @@ import './methods/changeLivechatStatus';
 import './methods/closeRoom';
 import './methods/discardTranscript';
 import './methods/getAgentData';
-import './methods/getAgentOverviewData';
 import './methods/getAnalyticsChartData';
 import './methods/getAnalyticsOverviewData';
 import './methods/getNextAgent';
