@@ -36,7 +36,6 @@ import './methods/removeManager';
 import './methods/removeTrigger';
 import './methods/removeRoom';
 import './methods/saveAgentInfo';
-import './methods/saveAppearance';
 import './methods/saveCustomField';
 import './methods/saveDepartment';
 import './methods/saveDepartmentAgents';
