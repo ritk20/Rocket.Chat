@@ -21,7 +21,12 @@ export const provideUsersSuggestedGroupKeys = async (
 
 		const usersWithSuggestedKeys = [];
 		for await (const user of usersSuggestedGroupKeys[roomId]) {
-			const { modifiedCount } = await Subscriptions.setGroupE2ESuggestedKeyAndOldRoomKeys(user._id, roomId, user.key, user.oldKeys);
+			const { modifiedCount } = await Subscriptions.setGroupE2ESuggestedKeyAndOldRoomKeys(
+				user._id,
+				roomId,
+				user.key,
+				parseOldKeysDates(user.oldKeys),
+			);
 			if (!modifiedCount) {
 				continue;
 			}
@@ -30,4 +35,12 @@ export const provideUsersSuggestedGroupKeys = async (
 
 		await Rooms.removeUsersFromE2EEQueueByRoomId(roomId, usersWithSuggestedKeys);
 	}
+};
+
+const parseOldKeysDates = (oldKeys: ISubscription['oldRoomKeys']) => {
+	if (!oldKeys) {
+		return;
+	}
+
+	return oldKeys.map((key) => ({ ...key, ts: new Date(key.ts) }));
 };
